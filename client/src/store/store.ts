@@ -2,7 +2,7 @@ import {IUser} from "../models/IUser";
 import {makeAutoObservable} from "mobx";
 import AuthService from "../services/AuthService";
 
-export default class Store{
+export default class Store {
     user = {} as IUser;
     isAuth = false;
 
@@ -10,31 +10,47 @@ export default class Store{
         makeAutoObservable(this);
     }
 
-    setAuth(bool:boolean){
+    setAuth(bool: boolean) {
         this.isAuth = bool;
     }
-    setUser(user:IUser){
+
+    setUser(user: IUser) {
         this.user = user;
     }
 
-    async  login(email: string, password:string) {
+    async login(email: string, password: string) {
         try {
             const response = await AuthService.login(email, password);
+            console.log(response)
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
             this.setUser(response.data.user);
-        } catch (e){
-            console.log(e.response?.data?.message);
+        } catch (e) {
+            console.log(e);
         }
     }
-    async  logout() {
+
+    async registration(email: string, password: string) {
+        try {
+            const response = await AuthService.registration(email, password);
+            console.log(response)
+            localStorage.setItem('token', response.data.accessToken);
+            this.setAuth(true);
+            this.setUser(response.data.user);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async logout() {
         try {
             const response = await AuthService.logout();
+            console.log(response)
             localStorage.removeItem('token');
-            this.setAuth(true);
+            this.setAuth(false);
             this.setUser({} as IUser);
         } catch (e) {
-            console.log(e.response?.data?.message);
+            console.log(e);
         }
     }
 }
